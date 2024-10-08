@@ -3,8 +3,13 @@ import StarterScreen from "./StarterScreen";
 import InputArea from "./InputArea";
 import { useState } from "react";
 import { ChatProvider } from "../contexts/ChatContext";
+import { ChatContext } from "../contexts/ChatContext";
 
 const ChatWindow = ({ currentCopilot, currentRepo }) => {
+  const [response, setResponse] = useState("");
+  const [displayPrompt, setDisplayPrompt] = useState("");
+  const [isReset, setIsReset] = useState(false); // Add reset state
+
   const [isMenuOpen, setMenuOpen] = useState(false);
   const [isExpanded, setExpanded] = useState(false);
 
@@ -17,6 +22,13 @@ const ChatWindow = ({ currentCopilot, currentRepo }) => {
     // Toggle between normal and expanded window
     setExpanded(!isExpanded);
   };
+
+  // Reset function to clear response and prompt
+  const reset = () => {
+    setIsReset(true);
+    setTimeout(() => setIsReset(false), 0); // Reset `isReset` back to false after triggering
+  };
+
   return (
     <ChatProvider>
       <div
@@ -30,12 +42,18 @@ const ChatWindow = ({ currentCopilot, currentRepo }) => {
           currentCopilot={currentCopilot}
           onToggleMenu={handleToggleMenu}
           onExpandWindow={handleExpandWindow}
+          onReset={reset} // Pass reset to ActionBar
         />
         {!isMenuOpen ? (
           <div className="flex-grow flex flex-col">
             <StarterScreen
               currentCopilot={currentCopilot}
               currentRepo={currentRepo}
+              response={response} // Pass response and prompt
+              setResponse={setResponse}
+              displayPrompt={displayPrompt}
+              setDisplayPrompt={setDisplayPrompt}
+              reset={isReset}
             />
             <InputArea />
           </div>

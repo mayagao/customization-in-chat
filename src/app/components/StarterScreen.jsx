@@ -1,5 +1,5 @@
 // StarterScreen.jsx
-import React, { useContext } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { RepoIcon } from "@primer/octicons-react";
 import StarterQuestions from "./StarterQuestions";
@@ -7,20 +7,71 @@ import StreamingOutput from "./StreamingOutput"; // Import the new component
 
 import { ChatContext } from "../contexts/ChatContext";
 
-const StarterScreen = ({ currentCopilot, currentRepo }) => {
-  const { response } = useContext(ChatContext);
+const StarterScreen = ({
+  currentCopilot,
+  currentRepo,
+  response,
+  setResponse,
+  displayPrompt,
+  setDisplayPrompt,
+  reset,
+}) => {
+  // const { response, setResponse } = useContext(ChatContext);
+  const [isStreaming, setIsStreaming] = useState(false);
+  const intervalId = useRef(null); // Use useRef to store interval ID
 
-  // Convert response text into HTML format
-  const formattedResponse = response
-    ? response
-        .split("\n")
-        .map((line) => `<p>${line}</p>`)
-        .join("")
-    : "";
+  const fakeResponse = [
+    "1. Start by creating a to-do list or schedule for the day.",
+    "2. List out all the tasks and activities you need to accomplish.",
+    "3. Prioritize your tasks based on importance and urgency.",
+    "4. Break down larger tasks into smaller, more manageable tasks.",
+    "5. Set specific time blocks for each task on your schedule.",
+    "6. Build in time for breaks and relaxation to avoid burnout.",
+    "7. Be realistic about what you can accomplish in a day.",
+    "8. Stay focused and avoid distractions by turning off notifications.",
+    "9. Review your progress throughout the day and adjust as needed.",
+    "10. End your day by reflecting on what went well and planning for the next day.",
+  ];
+
+  const handleButtonClick = (prompt) => {
+    // Stop any existing streaming interval if active
+    if (intervalId.current) {
+      clearInterval(intervalId.current);
+      intervalId.current = null;
+    }
+
+    setResponse(""); // Clear previous response
+    setDisplayPrompt(prompt); // Set prompt for display
+    setIsStreaming(true); // Start streaming
+
+    let index = 0;
+    intervalId.current = setInterval(() => {
+      if (index < fakeResponse.length) {
+        setResponse(
+          (prev) => prev + (index > 0 ? "\n" : "") + fakeResponse[index]
+        );
+        index++;
+      } else {
+        clearInterval(intervalId.current);
+        intervalId.current = null; // Clear interval ID when done
+        setIsStreaming(false);
+      }
+    }, 500);
+  };
+
+  // Stop streaming when reset is called
+  useEffect(() => {
+    if (reset) {
+      clearInterval(intervalId.current); // Stop any ongoing interval
+      setIsStreaming(false);
+      setResponse(false);
+      setDisplayPrompt("");
+    }
+  }, [reset]);
 
   return (
     <div>
-      {!response ? (
+      {!isStreaming && !response ? (
         <div className="starter-screen flex flex-col flex-grow">
           <button className="flex items-center px-2 ml-2 py-2 cursor-pointer text-gray-500 hover:text-gray-900 mr-4">
             <RepoIcon />
@@ -54,14 +105,17 @@ const StarterScreen = ({ currentCopilot, currentRepo }) => {
             <StarterQuestions
               currentCopilot={currentCopilot}
               currentRepo={currentRepo}
+              onClick={handleButtonClick}
             />
           </div>
         </div>
       ) : (
-        <div
-          className="response-screen p-4"
-          dangerouslySetInnerHTML={{ __html: formattedResponse }}
-        />
+        <div className="response-screen p-4">
+          <p>
+            <strong>Prompt:</strong> {displayPrompt}
+          </p>
+          {response}
+        </div>
       )}
     </div>
   );

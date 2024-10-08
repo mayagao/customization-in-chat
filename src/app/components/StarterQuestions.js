@@ -1,30 +1,18 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { CodeIcon, BookIcon, ChecklistIcon } from "@primer/octicons-react";
 import { fetchOpenAIResponse } from "../utils/openai";
 import { ChatContext } from "../contexts/ChatContext";
 
-const StarterQuestions = ({ currentCopilot, currentRepo }) => {
-  console.log("StarterQuestions component rendered"); // This should show in the console
-
-  const { setResponse } = useContext(ChatContext);
-
+const StarterQuestions = ({ currentCopilot, currentRepo, onClick }) => {
   const buttonClasses =
     "w-auto max-w-full h-[36px] py-1 px-3 border rounded-full border-gray-300 hover:bg-gray-100 truncate";
-
-  // Button Click Handler
-  const handleButtonClick = (prompt) => {
-    console.log("handleButtonClick triggered with prompt:", prompt);
-
-    setResponse(""); // Clear previous response
-    // fetchOpenAIResponse(prompt, setResponse); // Generate response
-  };
 
   // Helper function to create a starter question button
   const createStarterQuestion = (IconComponent, title, label, prompt) => (
     <button
       key={label} // Add a key for unique identification in list
       className={buttonClasses}
-      onClick={() => handleButtonClick(prompt)}
+      onClick={() => onClick(prompt)}
     >
       <IconComponent className="mr-2 text-gray-500" />
       <span className="font-medium py-1 mr-2">{title}</span>

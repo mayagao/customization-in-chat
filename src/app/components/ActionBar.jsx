@@ -11,7 +11,12 @@ import {
 
 import { useState } from "react";
 
-const ActionBar = ({ currentCopilot, onToggleMenu, onExpandWindow }) => {
+const ActionBar = ({
+  currentCopilot,
+  onToggleMenu,
+  onExpandWindow,
+  onReset,
+}) => {
   const [isPopoverOpen, setPopoverOpen] = useState(false);
 
   const handleHamburgerClick = () => {
@@ -87,7 +92,11 @@ const ActionBar = ({ currentCopilot, onToggleMenu, onExpandWindow }) => {
       </button>
       <div className="h-[24px] border-r border-gray-300"></div>
       {/* Plus (New Action) */}
-      <button className={`${buttonClasses} ml-2`} title="New action">
+      <button
+        className={`${buttonClasses} ml-2`}
+        title="New action"
+        onClick={onReset}
+      >
         <PlusIcon />
       </button>
 
