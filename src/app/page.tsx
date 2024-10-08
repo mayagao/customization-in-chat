@@ -1,4 +1,5 @@
 "use client";
+require("dotenv").config();
 
 import { useEffect, useState } from "react";
 
@@ -7,12 +8,8 @@ import ChatWindow from "./components/ChatWindow"; // Updated import
 import { useAppState } from "./contexts/AppStateContext";
 
 export default function Home() {
-  const {
-    currentSection,
-    setCurrentSection,
-    additionalState,
-    setAdditionalState,
-  } = useAppState();
+  const { currentCopilot, setcurrentCopilot, currentRepo, setcurrentRepo } =
+    useAppState();
   const [isMounted, setIsMounted] = useState(false);
 
   // Ensure that the component only mounts on the client side
@@ -25,14 +22,14 @@ export default function Home() {
   }
 
   const handleToggleClick = (section: string) => {
-    setCurrentSection(section);
+    setcurrentCopilot(section);
   };
 
   const handleAdditionalToggleClick = (newState: string) => {
-    if (additionalState === newState) {
-      setAdditionalState("global"); // Toggles it off
+    if (currentRepo === newState) {
+      setcurrentRepo("global"); // Toggles it off
     } else {
-      setAdditionalState(newState); // Toggles it on
+      setcurrentRepo(newState); // Toggles it on
     }
   };
 
@@ -42,19 +39,19 @@ export default function Home() {
         <ToggleButton
           label="Core Engineering"
           imageSrc={"/assets/images/core-engineering-icon.png"}
-          isActive={currentSection === "Core Engineering"}
+          isActive={currentCopilot === "Core Engineering"}
           onClick={() => handleToggleClick("Core Engineering")}
         />
         <ToggleButton
           label="Backend API"
           imageSrc={"/assets/images/backend-api-icon.png"}
-          isActive={currentSection === "Backend API"}
+          isActive={currentCopilot === "Backend API"}
           onClick={() => handleToggleClick("Backend API")}
         />
         <ToggleButton
           label="Copilot"
           imageSrc={"/assets/images/copilot-icon.png"}
-          isActive={currentSection === "Copilot"}
+          isActive={currentCopilot === "Copilot"}
           onClick={() => handleToggleClick("Copilot")}
         />
 
@@ -62,16 +59,13 @@ export default function Home() {
           <ToggleButton
             label="Repo-specific"
             imageSrc={undefined}
-            isActive={additionalState === "Repo-specific"}
+            isActive={currentRepo === "Repo-specific"}
             onClick={() => handleAdditionalToggleClick("Repo-specific")}
           />
         </div>
       </div>
 
-      <ChatWindow
-        currentSection={currentSection}
-        additionalState={additionalState}
-      />
+      <ChatWindow currentCopilot={currentCopilot} currentRepo={currentRepo} />
     </div>
   );
 }

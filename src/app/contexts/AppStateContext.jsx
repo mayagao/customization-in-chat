@@ -1,17 +1,25 @@
-import { createContext, useState, useContext } from 'react';
+import { createContext, useState, useContext } from "react";
 
 const AppStateContext = createContext();
 
 export const useAppState = () => useContext(AppStateContext);
 
 export const AppStateProvider = ({ children }) => {
-    // Add state for toggle options
-    const [currentSection, setCurrentSection] = useState('Core Engineering');
-    const [additionalState, setAdditionalState] = useState('default');
+  // Add state for toggle options
 
-    return (
-        <AppStateContext.Provider value={{ currentSection, setCurrentSection, additionalState, setAdditionalState }}>
-            {children}
-        </AppStateContext.Provider>
-    );
+  const [currentCopilot, setcurrentCopilot] = useState("Core Engineering");
+  const [currentRepo, setcurrentRepo] = useState("default");
+
+  return (
+    <AppStateContext.Provider
+      value={{
+        currentCopilot,
+        setcurrentCopilot,
+        currentRepo,
+        setcurrentRepo,
+      }}
+    >
+      {children}
+    </AppStateContext.Provider>
+  );
 };

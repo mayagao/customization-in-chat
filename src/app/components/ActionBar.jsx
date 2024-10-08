@@ -11,7 +11,7 @@ import {
 
 import { useState } from "react";
 
-const ActionBar = ({ currentSection, onToggleMenu, onExpandWindow }) => {
+const ActionBar = ({ currentCopilot, onToggleMenu, onExpandWindow }) => {
   const [isPopoverOpen, setPopoverOpen] = useState(false);
 
   const handleHamburgerClick = () => {
@@ -45,12 +45,12 @@ const ActionBar = ({ currentSection, onToggleMenu, onExpandWindow }) => {
       {/* Title updated based on selected filter */}
       <button className="flex items-center cursor-pointer text-gray-700 hover:text-gray-900 mr-auto">
         <Image
-          label={currentSection}
-          alt={currentSection}
+          label={currentCopilot}
+          alt={currentCopilot}
           src={
-            currentSection === "Core Engineering"
+            currentCopilot === "Core Engineering"
               ? "/assets/images/core-engineering-icon.png"
-              : currentSection === "Backend API"
+              : currentCopilot === "Backend API"
               ? "/assets/images/backend-api-icon.png"
               : "/assets/images/copilot-icon.png"
           }
