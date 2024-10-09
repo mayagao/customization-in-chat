@@ -5,7 +5,7 @@ import { useState } from "react";
 import { ChatProvider } from "../contexts/ChatContext";
 import { ChatContext } from "../contexts/ChatContext";
 
-const ChatWindow = ({ currentCopilot, currentRepo }) => {
+const ChatWindow = ({ currentCopilot, currentRepo, resetAll }) => {
   const [response, setResponse] = useState("");
   const [displayPrompt, setDisplayPrompt] = useState("");
   const [isReset, setIsReset] = useState(false); // Add reset state
@@ -54,6 +54,7 @@ const ChatWindow = ({ currentCopilot, currentRepo }) => {
               displayPrompt={displayPrompt}
               setDisplayPrompt={setDisplayPrompt}
               reset={isReset}
+              resetAll={resetAll}
             />
             <InputArea />
           </div>

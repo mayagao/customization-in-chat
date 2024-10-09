@@ -1,37 +1,34 @@
 // StarterScreen.jsx
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useContext, useRef, useState } from "react";
 import Image from "next/image";
 import { RepoIcon } from "@primer/octicons-react";
 import StarterQuestions from "./StarterQuestions";
 import StreamingOutput from "./StreamingOutput"; // Import the new component
+import { fetchOpenAIResponse } from "../utils/openai";
+import ReactMarkdown from "react-markdown";
 
 import { ChatContext } from "../contexts/ChatContext";
 
 const StarterScreen = ({
   currentCopilot,
   currentRepo,
-  response,
-  setResponse,
   displayPrompt,
   setDisplayPrompt,
   reset,
+  resetAll,
 }) => {
-  // const { response, setResponse } = useContext(ChatContext);
+  const { response, setResponse } = useContext(ChatContext);
   const [isStreaming, setIsStreaming] = useState(false);
-  const intervalId = useRef(null); // Use useRef to store interval ID
+  const intervalId = useRef(null);
 
-  const fakeResponse = [
-    "1. Start by creating a to-do list or schedule for the day.",
-    "2. List out all the tasks and activities you need to accomplish.",
-    "3. Prioritize your tasks based on importance and urgency.",
-    "4. Break down larger tasks into smaller, more manageable tasks.",
-    "5. Set specific time blocks for each task on your schedule.",
-    "6. Build in time for breaks and relaxation to avoid burnout.",
-    "7. Be realistic about what you can accomplish in a day.",
-    "8. Stay focused and avoid distractions by turning off notifications.",
-    "9. Review your progress throughout the day and adjust as needed.",
-    "10. End your day by reflecting on what went well and planning for the next day.",
-  ];
+  const [sources, setSources] = useState([]);
+  const [reasoningProcess, setReasoningProcess] = useState([]);
+  const [output, setOutput] = useState("");
+  const [currentStep, setCurrentStep] = useState(0);
+  const [showAllSteps, setShowAllSteps] = useState(false);
+  const [allStepsLoaded, setAllStepsLoaded] = useState(false);
+
+  const STEP_DELAY = 1000; // Define the delay constant here
 
   const handleButtonClick = (prompt) => {
     // Stop any existing streaming interval if active
@@ -39,35 +36,64 @@ const StarterScreen = ({
       clearInterval(intervalId.current);
       intervalId.current = null;
     }
-
     setResponse(""); // Clear previous response
     setDisplayPrompt(prompt); // Set prompt for display
     setIsStreaming(true); // Start streaming
 
-    let index = 0;
-    intervalId.current = setInterval(() => {
-      if (index < fakeResponse.length) {
-        setResponse(
-          (prev) => prev + (index > 0 ? "\n" : "") + fakeResponse[index]
-        );
-        index++;
-      } else {
-        clearInterval(intervalId.current);
-        intervalId.current = null; // Clear interval ID when done
-        setIsStreaming(false);
-      }
-    }, 500);
+    setReasoningProcess([]);
+    setOutput("");
+    setSources([]);
+
+    setCurrentStep(0);
+    setShowAllSteps(false);
+    setAllStepsLoaded(false);
+
+    fetchOpenAIResponse(
+      prompt,
+      setReasoningProcess,
+      setOutput,
+      setSources,
+      setCurrentStep,
+      STEP_DELAY
+    );
   };
 
   // Stop streaming when reset is called
   useEffect(() => {
-    if (reset) {
-      clearInterval(intervalId.current); // Stop any ongoing interval
+    if (reset || resetAll) {
+      clearInterval(intervalId.current);
       setIsStreaming(false);
       setResponse(false);
       setDisplayPrompt("");
+      setShowAllSteps(false); // Start with collapsed view
+      setCurrentStep(0);
+      setOutput("");
+      setSources("");
+      setReasoningProcess("");
+      console.log(sources, reasoningProcess, currentStep);
     }
-  }, [reset]);
+  }, [reset, resetAll]);
+
+  useEffect(() => {
+    if (
+      reasoningProcess.length > 0 &&
+      currentStep < reasoningProcess.length - 1
+    ) {
+      const timer = setTimeout(() => {
+        setCurrentStep((prevStep) => prevStep + 1);
+      }, STEP_DELAY);
+      return () => clearTimeout(timer);
+    } else if (
+      currentStep === reasoningProcess.length - 1 &&
+      reasoningProcess.length > 0
+    ) {
+      setAllStepsLoaded(true);
+    }
+  }, [currentStep, reasoningProcess]);
+
+  const toggleShowAllSteps = () => {
+    setShowAllSteps((prev) => !prev);
+  };
 
   return (
     <div>
@@ -111,10 +137,61 @@ const StarterScreen = ({
         </div>
       ) : (
         <div className="response-screen p-4">
-          <p>
-            <strong>Prompt:</strong> {displayPrompt}
-          </p>
-          {response}
+          {/* Display Prompt at the Top */}
+          {displayPrompt && (
+            <p className="text-lg font-semibold mb-4">
+              <strong>Prompt:</strong> {displayPrompt}
+            </p>
+          )}
+          {/* Reasoning Process */}
+          <div>
+            {allStepsLoaded && (
+              <div>
+                <strong>Reasoning Process:</strong>
+                <button
+                  onClick={toggleShowAllSteps}
+                  className="text-blue-500 ml-2"
+                >
+                  {showAllSteps ? "Hide all" : "Show all"}
+                </button>
+              </div>
+            )}
+
+            {allStepsLoaded ? (
+              showAllSteps ? (
+                <ul>
+                  {reasoningProcess.map((step, idx) => (
+                    <li key={idx}>
+                      <div>{step.title}</div>
+                      <div className="text-gray-500 ml-2">
+                        {step.description.map((m, i) => (
+                          <div key={i}>{m}</div>
+                        ))}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <></>
+              )
+            ) : (
+              <div>
+                <p>{reasoningProcess[currentStep].title}</p>
+              </div>
+            )}
+          </div>
+
+          <ReactMarkdown>{output}</ReactMarkdown>
+          <ul>
+            {sources.map((source, idx) => (
+              <React.Fragment key={idx}>
+                {idx === 0 && <strong>Sources:</strong>}
+                <li>{`${source.type} : ${source.name} ${
+                  source.path ? `(${source.path})` : ""
+                }`}</li>
+              </React.Fragment>
+            ))}
+          </ul>
         </div>
       )}
     </div>

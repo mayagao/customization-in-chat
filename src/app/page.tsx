@@ -11,6 +11,7 @@ export default function Home() {
   const { currentCopilot, setcurrentCopilot, currentRepo, setcurrentRepo } =
     useAppState();
   const [isMounted, setIsMounted] = useState(false);
+  const [isResetAll, setIsResetAll] = useState(false);
 
   // Ensure that the component only mounts on the client side
   useEffect(() => {
@@ -23,6 +24,8 @@ export default function Home() {
 
   const handleToggleClick = (section: string) => {
     setcurrentCopilot(section);
+    setIsResetAll(true);
+    setTimeout(() => setIsResetAll(false), 0); // Reset `isReset` back to false after triggering
   };
 
   const handleAdditionalToggleClick = (newState: string) => {
@@ -65,7 +68,12 @@ export default function Home() {
         </div>
       </div>
 
-      <ChatWindow currentCopilot={currentCopilot} currentRepo={currentRepo} />
+      <ChatWindow
+        currentCopilot={currentCopilot}
+        currentRepo={currentRepo}
+        resetAll={isResetAll}
+      />
+      {console.log(isResetAll)}
     </div>
   );
 }
