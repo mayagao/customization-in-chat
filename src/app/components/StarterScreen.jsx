@@ -37,8 +37,6 @@ const StarterScreen = ({
       intervalId.current = null;
     }
     setResponse(""); // Clear previous response
-    setDisplayPrompt(prompt); // Set prompt for display
-    setIsStreaming(true); // Start streaming
 
     setReasoningProcess([]);
     setOutput("");
@@ -48,14 +46,19 @@ const StarterScreen = ({
     setShowAllSteps(false);
     setAllStepsLoaded(false);
 
-    fetchOpenAIResponse(
-      prompt,
-      setReasoningProcess,
-      setOutput,
-      setSources,
-      setCurrentStep,
-      STEP_DELAY
-    );
+    setTimeout(() => {
+      setDisplayPrompt(prompt); // Set new prompt for display
+      setIsStreaming(true); // Start streaming
+
+      fetchOpenAIResponse(
+        prompt,
+        setReasoningProcess,
+        setOutput,
+        setSources,
+        setCurrentStep,
+        STEP_DELAY
+      );
+    }, 100); // Adjust the delay as needed
   };
 
   // Stop streaming when reset is called
@@ -68,10 +71,11 @@ const StarterScreen = ({
       setShowAllSteps(false); // Start with collapsed view
       setCurrentStep(0);
       setOutput("");
-      setSources("");
-      setReasoningProcess("");
-      console.log(sources, reasoningProcess, currentStep);
+      setSources([]);
+      setReasoningProcess([]);
     }
+
+    console.log(sources, reasoningProcess, currentStep);
   }, [reset, resetAll]);
 
   useEffect(() => {

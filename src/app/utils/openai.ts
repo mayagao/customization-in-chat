@@ -3,10 +3,11 @@
 export async function fetchOpenAIResponse(
   prompt,
   setReasoningProcess,
-  setOutput,
-  setSources,
-  setCurrentStep,
-  stepDelay
+
+  setOutput: (value: string) => void,
+  setSources: (value: Array<object>) => void,
+  setCurrentStep: (value: number) => void,
+  stepDelay: number
 ) {
   try {
     // const res = await fetch("/api/openai", {
