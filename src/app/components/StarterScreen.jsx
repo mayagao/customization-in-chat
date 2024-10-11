@@ -1,13 +1,34 @@
 // StarterScreen.jsx
 import React, { useEffect, useContext, useRef, useState } from "react";
 import Image from "next/image";
-import { RepoIcon } from "@primer/octicons-react";
+
 import StarterQuestions from "./StarterQuestions";
 import StreamingOutput from "./StreamingOutput"; // Import the new component
 import { fetchOpenAIResponse } from "../utils/openai";
 import ReactMarkdown from "react-markdown";
+import {
+  ChevronDownIcon,
+  ChevronUpIcon,
+  BookIcon,
+  SearchIcon,
+  NorthStarIcon,
+  FileCodeIcon,
+  TrackedByClosedCompletedIcon,
+  RepoIcon,
+  CopilotIcon,
+} from "@primer/octicons-react";
 
 import { ChatContext } from "../contexts/ChatContext";
+
+const iconMap = {
+  SearchIcon,
+  BookIcon,
+  NorthStarIcon,
+  FileCodeIcon,
+  RepoIcon,
+  CopilotIcon,
+  TrackedByClosedCompletedIcon,
+};
 
 const StarterScreen = ({
   currentCopilot,
@@ -100,9 +121,9 @@ const StarterScreen = ({
   };
 
   return (
-    <div>
+    <div className="flex-1 overflow-y-auto text-gray-800 ">
       {!isStreaming && !response ? (
-        <div className="starter-screen flex flex-col flex-grow">
+        <div className="starter-screen flex flex-col h-full">
           <button className="flex items-center px-2 ml-2 py-2 cursor-pointer text-gray-500 hover:text-gray-900 mr-4">
             <RepoIcon />
             {currentRepo === "Repo-specific" ? (
@@ -140,61 +161,144 @@ const StarterScreen = ({
           </div>
         </div>
       ) : (
-        <div className="response-screen p-4">
+        <div className="response-screen p-4 h-full flex-grow flex flex-col">
           {/* Display Prompt at the Top */}
           {displayPrompt && (
-            <p className="text-lg font-semibold mb-4">
-              <strong>Prompt:</strong> {displayPrompt}
-            </p>
+            <div className="br-4 text-gray-800 self-end rounded-lg w-5/6 py-3 bg-gray-100 block px-3 text-mini mb-4">
+              {displayPrompt}
+            </div>
           )}
+
+          <div className="flex items-center mb-1">
+            <Image
+              label={currentCopilot}
+              alt={currentCopilot}
+              src={
+                currentCopilot === "Core Engineering"
+                  ? "/assets/images/core-engineering-icon.png"
+                  : currentCopilot === "Backend API"
+                  ? "/assets/images/backend-api-icon.png"
+                  : "/assets/images/copilot-icon.png"
+              }
+              width="20"
+              height="20"
+              className="mr-1 border border-gray-300 border-opacity-50 rounded-full"
+            />
+            <div className="text-s font-medium">{currentCopilot}</div>
+          </div>
           {/* Reasoning Process */}
           <div>
             {allStepsLoaded && (
               <div>
-                <strong>Reasoning Process:</strong>
                 <button
                   onClick={toggleShowAllSteps}
-                  className="text-blue-500 ml-2"
+                  className="text-xs gap-1 text-gray-500 flex items-center py-1"
                 >
-                  {showAllSteps ? "Hide all" : "Show all"}
+                  Reasoning process{" "}
+                  {showAllSteps ? <ChevronUpIcon /> : <ChevronDownIcon />}
                 </button>
               </div>
             )}
 
             {allStepsLoaded ? (
               showAllSteps ? (
-                <ul>
-                  {reasoningProcess.map((step, idx) => (
-                    <li key={idx}>
-                      <div>{step.title}</div>
-                      <div className="text-gray-500 ml-2">
-                        {step.description.map((m, i) => (
-                          <div key={i}>{m}</div>
-                        ))}
-                      </div>
-                    </li>
-                  ))}
+                <ul className="px-3 pb-0 pt-4 border rounded-lg reasoning-process mb-4">
+                  {reasoningProcess.map((step, idx) => {
+                    const IconComponent = iconMap[step.icon]; // Get the icon from the map
+                    console.log(step.icon);
+                    return (
+                      <li key={idx} className="relative">
+                        <div class="step-circle"></div>
+                        <div className="step-container">
+                          <div className="mb-1 text-xs text-gray-500">
+                            {step.title}:
+                          </div>
+                          <div className="flex gap-1 flex-wrap">
+                            {step.description.map((m, i) => (
+                              <div
+                                key={i}
+                                className="flex-shrink-0 bg-gray-50 inline-block pa-2 border px-2 py-1 text-xs inline-flex items-center rounded-md"
+                              >
+                                <IconComponent className="mr-1 w-[12px] text-gray-500" />
+                                <span className="text-gray-800">
+                                  {i > 1 ? "2+" : m}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </li>
+                    );
+                  })}
                 </ul>
               ) : (
                 <></>
               )
             ) : (
               <div>
-                <p>{reasoningProcess[currentStep].title}</p>
+                <div className="text-xs gap-1 text-gray-500 flex items-center py-1">
+                  {reasoningProcess[currentStep].title} ...
+                </div>
+                {reasoningProcess[currentStep].description.map((m, i) => {
+                  const IconComponent =
+                    iconMap[reasoningProcess[currentStep].icon]; // Get the icon from the map
+
+                  console.log(m);
+
+                  return (
+                    <div
+                      className={`text-xs ${
+                        i === 0
+                          ? "text-gray-400 "
+                          : i === 1
+                          ? "text-gray-300"
+                          : "text-gray-200"
+                      } flex items-center py-1`}
+                      key={i}
+                    >
+                      <IconComponent className="h-[12px] mr-1" />
+                      {m}
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
 
-          <ReactMarkdown>{output}</ReactMarkdown>
+          <div className="mardown-output mt-2">
+            <ReactMarkdown>{output}</ReactMarkdown>
+          </div>
           <ul>
-            {sources.map((source, idx) => (
-              <React.Fragment key={idx}>
-                {idx === 0 && <strong>Sources:</strong>}
-                <li>{`${source.type} : ${source.name} ${
-                  source.path ? `(${source.path})` : ""
-                }`}</li>
-              </React.Fragment>
-            ))}
+            {sources.map((source, idx) => {
+              const IconComponent = iconMap[source.type]; // Get the icon from the map
+              return (
+                <React.Fragment key={idx}>
+                  {idx === 0 && (
+                    <div>
+                      <button
+                        onClick={toggleShowAllSteps}
+                        className="text-xs gap-1 text-gray-500 flex items-center  py-1"
+                      >
+                        Sources (5) <ChevronUpIcon />
+                      </button>
+                    </div>
+                  )}
+                  <li className="flex items-center gap-2 truncate py-1">
+                    <span
+                      style={{ fontVariantNumeric: "tabular-nums" }}
+                      className="text-gray-500 text-xs"
+                    >
+                      [{idx}]
+                    </span>
+                    <IconComponent className="text-gray-500" />
+                    <span className="text-gray-800 ">{source.name} </span>
+                    <span className="text-gray-500 text-xs truncate">
+                      {source.path}
+                    </span>
+                  </li>
+                </React.Fragment>
+              );
+            })}
           </ul>
         </div>
       )}

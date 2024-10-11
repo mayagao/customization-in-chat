@@ -43,9 +43,10 @@ const ChatWindow = ({ currentCopilot, currentRepo, resetAll }) => {
           onToggleMenu={handleToggleMenu}
           onExpandWindow={handleExpandWindow}
           onReset={reset} // Pass reset to ActionBar
+          displayPrompt={displayPrompt}
         />
         {!isMenuOpen ? (
-          <div className="flex-grow flex flex-col">
+          <div className="flex flex-col h-[calc(100%-48px)]">
             <StarterScreen
               currentCopilot={currentCopilot}
               currentRepo={currentRepo}

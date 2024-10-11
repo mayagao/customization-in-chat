@@ -64,3 +64,55 @@ body {
   background-color: #ccc;
   font-weight: bold;
 }
+.step-circle {
+  width: 5px;
+  height: 5px;
+  background: #ccc;
+  position: absolute;
+  left: -2px;
+  top: 5px;
+}
+
+.step-container {
+  padding-left: 12px;
+  box-shadow: inset 1px 0 0 #ccc;
+  padding-bottom: 20px;
+  margin-bottom: -8px;
+}
+.reasoning-process li:last-of-type {
+  .step-container {
+    box-shadow: none;
+  }
+}
+
+.mardown-output {
+  padding: 0px 0px;
+
+  color: var(--text-gray-800);
+  p {
+    margin-bottom: 8px;
+  }
+  code {
+    font-family: SF Mono, SFMono-Regular, ui-monospace, Menlo, monospace;
+    font-size: 0.9em;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 2px 3px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+  }
+  strong {
+    font-weight: 600;
+  }
+  a {
+    font-size: 0.85em; /* Make it smaller */
+    vertical-align: text-top;
+    margin: 0 1px 0 0; /* Add a little space from previous text */
+    color: gray;
+    &::before {
+      content: "[" attr(data-index);
+    }
+    &::after {
+      content: attr(data-index) "]";
+    }
+  }
+}

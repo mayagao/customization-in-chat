@@ -16,6 +16,7 @@ const ActionBar = ({
   onToggleMenu,
   onExpandWindow,
   onReset,
+  displayPrompt,
 }) => {
   const [isPopoverOpen, setPopoverOpen] = useState(false);
 
@@ -37,7 +38,7 @@ const ActionBar = ({
   const buttonClasses =
     "text-gray-500 h-[32px] w-[32px] rounded-md hover:bg-gray-100 hover:text-gray-700 cursor-pointer flex items-center justify-center";
   return (
-    <div className="flex items-center rounded-tl-lg rounded-tr-lg px-2 py-2 bg-white border-b border-gray-300">
+    <div className="h-[48px] w-full flex items-center rounded-tl-lg rounded-tr-lg px-2 py-2 bg-white border-b border-gray-300">
       {/* Hamburger Menu */}
       <button
         className={`${buttonClasses} mr-2`}
@@ -48,7 +49,7 @@ const ActionBar = ({
       </button>
 
       {/* Title updated based on selected filter */}
-      <button className="flex items-center cursor-pointer text-gray-700 hover:text-gray-900 mr-auto">
+      <button className="flex items-center cursor-pointer text-gray-700 hover:text-gray-900 mr-auto w-[calc(100%-200px)]">
         <Image
           label={currentCopilot}
           alt={currentCopilot}
@@ -63,7 +64,9 @@ const ActionBar = ({
           height="20"
           className="mr-1 border border-gray-300 border-opacity-50 rounded-full"
         />
-        <span className="ml-1 font-medium">Untitled</span>
+        <span className="ml-1 font-medium truncate">
+          {displayPrompt ? displayPrompt : "Untitled"}
+        </span>
       </button>
 
       {/* More Options (Ellipsis) */}

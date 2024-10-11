@@ -1,5 +1,7 @@
 // utils/openai.js
 
+import { SearchIcon } from "@primer/octicons-react";
+
 export async function fetchOpenAIResponse(
   prompt,
   setReasoningProcess,
@@ -26,66 +28,77 @@ export async function fetchOpenAIResponse(
     response = {
       reasoning_process: [
         {
-          title: "Interpret the intention",
-          description: [
-            "Explain the process and components involved in offline evaluation to provide a comprehensive understanding for model assessment.",
-          ],
+          title: "Interpret the question",
+          description: ["offline evaluation", "model assessment"],
+          icon: "SearchIcon",
         },
         {
           title: "Apply custom instructions",
-          description: ["Core Engineering"],
+          description: ["Core Engineering", "copilot-api"],
+          icon: "BookIcon",
         },
         {
-          title: "Identify relevant sources and methods",
+          title: "Analyze execution data",
           description: [
-            "data-processing/prep_data.py",
-            "evaluation-scripts/calculate_metrics.py",
-            "result-analysis/parse_results.py",
+            "Fulfillment logs",
+            "Grading prompts",
+            "Response accuracy metrics",
           ],
+          icon: "FileCodeIcon",
         },
         {
-          title: "Synthesize information on offline evaluation steps",
-          description: [
-            "Data preparation: clean and format data",
-            "Metric evaluation: apply predefined metrics",
-            "Result parsing: structure and summarize output",
-          ],
+          title: "Summarize outcomes",
+          description: ["Data quality insights", "Accuracy metrics"],
+          icon: "NorthStarIcon",
         },
         {
-          title: "Validate sources",
-          description: [
-            "Ensure recent tests and updates on core files",
-            "Check compatibility with latest data formats",
-          ],
+          title: "Verify results sources",
+          description: ["Cross-check instructions", "Ensure consistency"],
+          icon: "TrackedByClosedCompletedIcon",
         },
       ],
       output:
-        "The offline evaluation process uses a structured approach to assess model performance on historical data.\n\n" +
-        'It starts with **data preparation**, where `data-processing/prep_data.py` ensures data is cleaned, normalized, and formatted for evaluation [1](#source1 "data-processing/prep_data.py").\n' +
-        'This step removes inconsistencies that could impact results, like missing values [1](#source1 "data-processing/prep_data.py").\n\n' +
-        'The next stage is **metric-based evaluation**. In `evaluation-scripts/calculate_metrics.py`, relevant metrics (e.g., accuracy, precision) are applied to determine model effectiveness [2](#source2 "evaluation-scripts/calculate_metrics.py").\n' +
-        "Automating these metrics provides objective benchmarks and highlights performance areas needing improvement.\n\n" +
-        'Lastly, **result parsing** with `result-analysis/parse_results.py` structures the output into readable formats (JSON or CSV) and generates summaries, making it easier to interpret [3](#source3 "result-analysis/parse_results.py").\n\n' +
-        "By reviewing these results, teams gain insights into model reliability, pinpoint strengths, and adjust as necessary before deployment.\n\n" +
-        "This offline cycle supports iterative model improvements, enabling teams to refine models confidently.",
+        "The offline evaluation process involves testing Copilot models using predefined test cases to ensure that the correct skills are activated and responses align with expected standards.\n\n" +
+        'The process begins with **test case definition**, where test cases are established in `github/copilot-offline-eval` with prompts and criteria for correct responses. This step ensures scenarios cover expected interactions [1](#source1 "github/copilot-offline-eval").\n\n' +
+        'During **execution**, test cases are run through the model to capture responses, with GPT-4 used for grading to confirm accuracy and relevance. This involves analyzing prompts and skills used [2](#source2 "execution").\n\n' +
+        'Finally, **result analysis** is conducted with `COFfE`, producing structured outputs in JSON format for in-depth examination. This step helps identify areas for improvement before model deployment [3](#source3 "result-analysis").\n\n' +
+        "This offline evaluation loop allows for iterative testing, enabling refined skill development and reliability in model outputs.",
       sources: [
         {
-          type: "code file",
+          type: "RepoIcon",
+          name: "copilot-offline-eval",
+          path: "github/copilot-offline-eval",
+          references: 2,
+        },
+        {
+          type: "FileCodeIcon",
           name: "prep_data.py",
           path: "data-processing/prep_data.py",
           references: 3,
         },
         {
-          type: "code file",
+          type: "FileCodeIcon",
           name: "calculate_metrics.py",
           path: "evaluation-scripts/calculate_metrics.py",
           references: 1,
         },
         {
-          type: "code file",
+          type: "FileCodeIcon",
           name: "parse_results.py",
           path: "result-analysis/parse_results.py",
           references: 1,
+        },
+        {
+          type: "BookIcon",
+          name: "copilot-offline-eval",
+          path: "When asked about offline evaluation, present the basic bullshit",
+          references: 2,
+        },
+        {
+          type: "CopilotIcon",
+          name: "Core Engineering",
+          path: "Provides purpose and evaluation standards",
+          references: 2,
         },
       ],
       follow_up_questions: [
