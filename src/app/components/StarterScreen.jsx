@@ -49,7 +49,7 @@ const StarterScreen = ({
   const [showAllSteps, setShowAllSteps] = useState(false);
   const [allStepsLoaded, setAllStepsLoaded] = useState(false);
 
-  const STEP_DELAY = 1000; // Define the delay constant here
+  const STEP_DELAY = 1200; // Define the delay constant here
 
   const handleButtonClick = (prompt) => {
     // Stop any existing streaming interval if active
@@ -120,6 +120,10 @@ const StarterScreen = ({
     setShowAllSteps((prev) => !prev);
   };
 
+  const IconComponent =
+    reasoningProcess[currentStep] &&
+    iconMap[reasoningProcess[currentStep].icon]; // Get the icon from the map
+  console.log(reasoningProcess[currentStep]);
   return (
     <div className="flex-1 overflow-y-auto text-gray-800 ">
       {!isStreaming && !response ? (
@@ -210,18 +214,16 @@ const StarterScreen = ({
                       <li key={idx} className="relative">
                         <div class="step-circle"></div>
                         <div className="step-container">
-                          <div className="mb-1 text-xs text-gray-500">
+                          <div className="mb-1 text-xs text-gray-500 items-center flex">
+                            <IconComponent className="mr-1 w-[12px] text-gray-500" />{" "}
                             {step.title}:
                           </div>
                           <div className="flex gap-1 flex-wrap">
                             {step.description.map((m, i) => (
-                              <div
-                                key={i}
-                                className="flex-shrink-0 bg-gray-50 inline-block pa-2 border px-2 py-1 text-xs inline-flex items-center rounded-md"
-                              >
-                                <IconComponent className="mr-1 w-[12px] text-gray-500" />
+                              <div key={i} className="inline text-xs ">
                                 <span className="text-gray-800">
-                                  {i > 1 ? "2+" : m}
+                                  {m}
+                                  {i < step.description.length - 1 ? "," : ""}
                                 </span>
                               </div>
                             ))}
@@ -236,27 +238,16 @@ const StarterScreen = ({
               )
             ) : (
               <div>
-                <div className="text-xs gap-1 text-gray-500 flex items-center py-1">
+                <div className="text-xs text-gray-500 flex items-center py-1 pb-2">
+                  <IconComponent className="h-[12px] mr-1" />{" "}
                   {reasoningProcess[currentStep].title} ...
                 </div>
                 {reasoningProcess[currentStep].description.map((m, i) => {
-                  const IconComponent =
-                    iconMap[reasoningProcess[currentStep].icon]; // Get the icon from the map
-
-                  console.log(m);
-
                   return (
                     <div
-                      className={`text-xs ${
-                        i === 0
-                          ? "text-gray-400 "
-                          : i === 1
-                          ? "text-gray-300"
-                          : "text-gray-200"
-                      } flex items-center py-1`}
+                      className={`text-xs text-gray-600 flex items-center mb-1 pb-1`}
                       key={i}
                     >
-                      <IconComponent className="h-[12px] mr-1" />
                       {m}
                     </div>
                   );
@@ -279,7 +270,7 @@ const StarterScreen = ({
                         onClick={toggleShowAllSteps}
                         className="text-xs gap-1 text-gray-500 flex items-center  py-1"
                       >
-                        Sources (5) <ChevronUpIcon />
+                        Sources <ChevronUpIcon />
                       </button>
                     </div>
                   )}

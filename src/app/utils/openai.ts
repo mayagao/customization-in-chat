@@ -28,8 +28,8 @@ export async function fetchOpenAIResponse(
     response = {
       reasoning_process: [
         {
-          title: "Interpret the question",
-          description: ["offline evaluation", "model assessment"],
+          title: "Search keywords",
+          description: ["offline eval", "code completion"],
           icon: "SearchIcon",
         },
         {
@@ -38,7 +38,7 @@ export async function fetchOpenAIResponse(
           icon: "BookIcon",
         },
         {
-          title: "Analyze execution data",
+          title: "Identify common evaluation patterns",
           description: [
             "Fulfillment logs",
             "Grading prompts",
@@ -48,12 +48,14 @@ export async function fetchOpenAIResponse(
         },
         {
           title: "Summarize outcomes",
-          description: ["Data quality insights", "Accuracy metrics"],
+          description: [
+            "90% of test cases provided clear, unambiguous results, 10% of cases required additional context for accurate evaluation",
+          ],
           icon: "NorthStarIcon",
         },
         {
           title: "Verify results sources",
-          description: ["Cross-check instructions", "Ensure consistency"],
+          description: ["Compared results with previous evaluation cycles"],
           icon: "TrackedByClosedCompletedIcon",
         },
       ],
@@ -149,13 +151,13 @@ export async function fetchOpenAIResponse(
         } else {
           clearInterval(interval);
         }
-      }, 50); // Adjust speed as needed
+      }, 30); // Adjust speed as needed
     }, response.reasoning_process.length * stepDelay);
 
     // Step 3: Display sources immediately after output is complete
     setTimeout(() => {
       setSources(response.sources);
-    }, response.reasoning_process.length * stepDelay + response.output.split(" ").length * 50 + 10);
+    }, response.reasoning_process.length * stepDelay + response.output.split(" ").length * 30 + 10);
   } catch (error) {
     console.error("Network error:", error);
   }
